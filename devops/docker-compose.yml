@@ -10,7 +10,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=backend-db
+      - POSTGRES_DB=monorepodb
     networks:
       - application
     container_name: monorepo-postgres
