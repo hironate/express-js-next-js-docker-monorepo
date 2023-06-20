@@ -53,12 +53,12 @@ To access the PostgreSQL database, you can use tools like pgAdmin. Follow the st
 1. Open pgAdmin.
 2. Set the following credentials:
    - Host: `localhost`
-   - Database: `backend-db`
-   - User: `monorepo`
-   - Password: `monorepo`
+   - Database: `monorepodb`
+   - User: `monorepo_user`
+   - Password: `monorepo-password`
    - Port: `5432`
 
-### Running Backend tests
+### Running Backend Tests
 
 To run the backend tests in the "backend" directory, follow the steps below:
 
@@ -88,10 +88,10 @@ To contribute to this project, please follow these guidelines:
 - Make sure all tests pass successfully.
 - Open a pull request with a detailed description of your changes.
 
-## Author
+## Authors
 
 - Hiren Kavad
-  -- This project is co-authored by Hiren Kavad. You can find more information about the author on their website: [hirenkavad.com](https://www.hirenkavad.com).
+  - This project is co-authored by Hiren Kavad. You can find more information about the author on their website: [hirenkavad.com](https://www.hirenkavad.com).
 - Yatharth Andhariya
 
 ## Acknowledgments
