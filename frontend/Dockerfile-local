@@ -1,0 +1,16 @@
+FROM node:16.15.0-alpine
+
+WORKDIR /app
+
+ENV PATH /app/node_modules/.bin:$PATH
+
+COPY package*.json ./
+
+RUN npm install --silent
+RUN npm install --save-dev
+RUN npm i next@13.4.5
+
+COPY . ./
+
+EXPOSE 3000
+

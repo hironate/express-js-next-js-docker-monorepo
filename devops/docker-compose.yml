@@ -1,0 +1,125 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:15
+    ports:
+      - '5432:5432'
+    volumes:
+      - $HOME/monorepo/monorepo-postgres:/var/lib/postgresql/data
+      - ./init-database.sh:/docker-entrypoint-initdb.d/init-database.sh
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=backend-db
+    networks:
+      - application
+    container_name: monorepo-postgres
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  postgres-test:
+    image: postgres:15
+    ports:
+      - '5431:5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    networks:
+      - application
+    volumes:
+      - $HOME/monorepo/monorepo-postgres-test:/var/lib/postgresql/data
+    restart: always
+    container_name: monorepo-postgres-test
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ../backend/.
+      dockerfile: ../backend/Dockerfile-local
+    image: api:v1
+    ports:
+      - '3000:3000'
+    tty: true
+    volumes:
+      - '../backend:/app'
+    networks:
+      - application
+    container_name: monorepo-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint: ['/bin/sh', '-c']
+    environment:
+      - INTEGRATION_TEST_HOST_URL= http://localhost:3002
+    command:
+      - |
+        npm i
+        npm run sequelize db:migrate
+        npm run dev
+
+  api-test:
+    build:
+      context: ../backend/.
+      dockerfile: ../backend/Dockerfile-local
+    image: api-test:v1
+    ports:
+      - '3002:3000'
+    tty: true
+    volumes:
+      - '../backend:/app'
+    networks:
+      - application
+    container_name: monorepo-backend-test
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+    entrypoint: ['/bin/sh', '-c']
+    environment:
+      - NODE_ENV=test
+      - DB_HOST=postgres-test
+      - DB_DATABASE=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - INTEGRATION_TEST_HOST_URL= http://localhost:3002
+    command:
+      - |
+        npm i
+        npm run sequelize db:migrate:undo:all
+        npm run sequelize db:migrate
+        npm run sequelize db:seed:all
+        nodemon --legacy-watch src/server.js
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile-local
+    image: frontend:v1
+    ports:
+      - '3001:3000'
+    tty: true
+    volumes:
+      - ../frontend/:/app
+    networks:
+      - application
+    container_name: monorepo-frontend
+    entrypoint: ['/bin/sh', '-c']
+    command:
+      - |
+        npm i
+        npm run dev
+    depends_on:
+      - api
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+
+networks:
+  application:
+    driver: bridge
