@@ -43,7 +43,8 @@ services:
   api:
     build:
       context: ../backend/.
-      dockerfile: ../backend/Dockerfile-local
+      dockerfile: ../backend/Dockerfile
+      target: dev
     image: api:v1
     ports:
       - '3000:3000'
@@ -68,7 +69,8 @@ services:
   api-test:
     build:
       context: ../backend/.
-      dockerfile: ../backend/Dockerfile-local
+      dockerfile: ../backend/Dockerfile
+      target: test
     image: api-test:v1
     ports:
       - '3002:3000'
