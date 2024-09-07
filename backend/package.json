@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/server.js",
+    "start": "node src/server.js",
     "test:local": "export NODE_ENV=test DB_DIALECT=postgres DB_HOST=localhost DB_DATABASE=postgres DB_USER=postgres DB_PASSWORD=postgres DB_PORT=5431 INTEGRATION_TEST_HOST_URL=http://localhost:3002 TZ=utc && npm run test:local:migration && mocha spec --recursive --timeout 10000 --exit",
     "sequelize": "sequelize --options-path=database/options.js",
     "test:local:migration": "npm run sequelize db:migrate:undo:all && npm run sequelize db:migrate && npm run sequelize db:seed:all",
